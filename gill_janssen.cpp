@@ -7,7 +7,53 @@ const char *infotext="name=\"AlphaBeta\", author=\"Amandeep Gill && Kyle Janssen
 int board[MAX_BOARD][MAX_BOARD];
 static unsigned seed;
 
-oid brain_init()
+aiMove get_move()
+{
+    int a = -10000;
+    int b = 10000;
+    int moves = 100;
+
+    aiMove[] aimoves = generate_moves(true, moves);
+
+    int best_move = 0;
+    int mval = -10000;
+    for (int i = 0; i < moves; i++)
+    {
+        do_move(aimoves[i]);
+        int tmp_mval = alphabeta(5, a, b, false);
+        undo_move(aimoves[i]);
+        if (tmp_mval > mvl)
+        {
+            mval = tmp_mval;
+            best_move = i;
+        }
+    }
+
+    return aimoves[best_move];
+}
+
+int alphabeta(int d, int a, int b, bool max_player)
+{
+    // this is not correct, it needs to be fixed
+    aiMove[] aimoves = generate_moves(true, moves);
+
+    int best_move = 0;
+    int mval = -10000;
+    for (int i = 0; i < moves; i++)
+    {
+        do_move(aimoves[i]);
+        int tmp_mval = alphabeta(5, a, b, false);
+        undo_move(aimoves[i]);
+        if (tmp_mval > mvl)
+        {
+            mval = tmp_mval;
+            best_move = i;
+        }
+    }
+
+}
+
+void brain_init()
 {
     if(width<5 || width>MAX_BOARD || height<5 || height>MAX_BOARD)
     {

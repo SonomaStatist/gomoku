@@ -13,11 +13,15 @@ extern int terminate; /* return from brain_turn when terminate>0 */
 extern unsigned start_time; /* tick count at the beginning of turn */
 extern char dataFolder[256]; /* folder for persistent files */
 
-typedef struct {
+typedef struct
+{
     int n; /* the number of neighboring player tiles */
+    int p; /* the player whose tile to use */
     int x;
     int y;
-} moves;
+    inline aiMove(int n_=0, int p_=0, int x_=0, int y_=0) :
+        n(n_), p(p_), x(x_), y(y_) {}
+} aiMove;
 
 /* you have to implement these functions */
 void brain_init(); /* create the board and call pipeOut("OK"); */
@@ -31,18 +35,24 @@ int brain_takeback(int x,int y); /* clear one square; return value: 0:success, 1
 void brain_end();  /* delete temporary files, free resources */
 
 /* AI's alphabeta pruning and helper functions */
-int alphabeta(int d, int a, int b, bool max_player);
-int winner();
-moves generate_moves(bool max_player);
+aiMove get_move(); /* sets up call to alphabeta() */
+int alphabeta(int d, int a, int b, bool max_player); /* depth, alpha, beta, eval for max/min player */
+int winner(); /* returns 0 for no winner, 1 or 2 if player 1 or 2 has won */
+void do_move(const aiMove &aim);
+void undo_move(const aiMove &aim);
+int eval_board(int player);
+aiMove[] generate_moves(bool max_player, int &moves);
+    /* generate moves for 1 (true) or 2 (false) generate up to &moves, and replace
+       moves with the number of moves generated */
 
 #ifdef DEBUG_EVAL
 void brain_eval(int x,int y); /* display evaluation of square [x,y] */
 #endif
 
 #ifndef ABOUT_FUNC
-  extern const char *infotext; /* AI identification (copyright, version) */
+extern const char *infotext; /* AI identification (copyright, version) */
 #else
-  void brain_about(); /* call pipeOut(" your AI info ") */
+void brain_about(); /* call pipeOut(" your AI info ") */
 #endif
 
 /* these functions are in pisqpipe.cpp */
