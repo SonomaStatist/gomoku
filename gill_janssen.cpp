@@ -134,106 +134,6 @@ void brain_turn()
 
 void brain_end() { }
 
-
-aiMove get_move()
-{
-    int a = -10000;
-    int b = 10000;
-    int moves = 25;
-
-    aiMove* aimoves = generate_moves(true, moves);
-
-    int best_move = 0;
-    int mval = -10000;
-    for (int i = 0; i < moves; i++)
-    {
-        do_move(aimoves[i]);
-        int tmp_mval = alphabeta(5, a, b, false);
-        undo_move(aimoves[i]);
-        if (tmp_mval > mval)
-        {
-            mval = tmp_mval;
-            best_move = i;
-        }
-    }
-
-    aiMove aimove = aimoves[best_move];
-    delete[] aimoves;
-    return aimove;
-}
-
-int alphabeta(int d, int a, int b, bool max_player)
-{
-    int retval;
-    int moves = 10;
-    aiMove* aimoves = generate_moves(true, moves);
-
-    int winner = get_winner();
-    if (winner != 0)
-    {
-        retval = 10000;
-        if (winner == 1)
-        {
-            retval = max_player ? retval : -retval;
-            goto cleanup_ab;
-        }
-        else
-        {
-            retval = max_player ? -retval : retval;
-            goto cleanup_ab;
-        }
-    }
-    else if (d <= 0)
-    {
-        retval = eval_board(1);
-        goto cleanup_ab;
-    }
-    else if (max_player)
-    {
-        for (int i = 0; i < moves; i++)
-        {
-            do_move(aimoves[i]);
-
-            int atmp = alphabeta(d-1, a, b, false);
-            a = atmp > a ? atmp : a;
-            undo_move(aimoves[i]);
-
-            if (b > a)
-            {
-                retval = a;
-                goto cleanup_ab;
-            }
-        }
-
-        retval = a;
-        goto cleanup_ab;
-    }
-    else
-    {
-        for (int i = 0; i < moves; i++)
-        {
-            do_move(aimoves[i]);
-
-            int btmp = alphabeta(d-1, a, b, false);
-            b = btmp > b ? btmp : b;
-            undo_move(aimoves[i]);
-
-            if (a > b)
-            {
-                retval = b;
-                goto cleanup_ab;
-            }
-        }
-
-        retval = b;
-        goto cleanup_ab;
-    }
-
-cleanup_ab:
-    delete[] aimoves;
-    return retval;
-}
-
 aiMove* generate_moves(bool max_player, int &moves)
 {
     int p, o;
@@ -540,14 +440,16 @@ aiMove* generate_moves(bool max_player, int &moves)
     {
         for (int y = 0; y < height; y++)
         {
-            if (isFree(x,y) && (
-                hasTile(x-1,y,p) || hasTile(x-1,y-1,p) || hasTile(x-1,y+1,p) ||
-                hasTile(x+1,y,p) || hasTile(x+1,y-1,p) || hasTile(x+1,y+1,p) ||
-                hasTile(x,y-1,p) || hasTile(x,y+1,p)))
+            if (isFree(x,y))
             {
-                aiMove aim(p, x, y);
-                aimoves[used_moves] = aim;
-                used_moves++;
+                if (hasTile(x-1,y,p) || hasTile(x-1,y-1,p) || hasTile(x-1,y+1,p) ||
+                    hasTile(x+1,y,p) || hasTile(x+1,y-1,p) || hasTile(x+1,y+1,p) ||
+                    hasTile(x,y-1,p) || hasTile(x,y+1,p))
+                {
+                    aiMove aim(p, x, y);
+                    aimoves[used_moves] = aim;
+                    used_moves++;
+                }
             }
             if (used_moves == moves)
             {
@@ -677,169 +579,6 @@ int eval_board(int p)
     }
 
     return score;
-}
-
-int get_winner()
-{
-    for (int i = 0; i < height; i)
-    {
-        int x = 0, y = i;
-        int streak = 0;
-        int player = 0;
-        while (x < width && y < height)
-        {
-            if (player == 0)
-            {
-                if ((player = board[x][y]) != 0)
-                {
-                    streak = 1;
-                }
-            }
-            else
-            {
-                if (player != board[x][y])
-                {
-                    if ((player = board[x][y]) == 0)
-                    {
-                        streak = 1;
-                    }
-                    else
-                    {
-                        streak = 0;
-                    }
-                }
-                else
-                {
-                    streak++;
-                    if (streak == 5)
-                    {
-                        return player;
-                    }
-                }
-            }
-            x++;
-            y++;
-        }
-    }
-
-    for (int i = 0; i < width; i++)
-    {
-        int x = i, y = 0;
-        int streak = 0;
-        int player = 0;
-        while (x < width && y < height)
-        {
-            if (player == 0)
-            {
-                if ((player = board[x][y]) != 0)
-                {
-                    streak = 1;
-                }
-            }
-            else
-            {
-                if (player != board[x][y])
-                {
-                    if ((player = board[x][y]) == 0)
-                    {
-                        streak = 1;
-                    }
-                    else
-                    {
-                        streak = 0;
-                    }
-                }
-                else
-                {
-                    streak++;
-                    if (streak == 5)
-                    {
-                        return player;
-                    }
-                }
-            }
-            x++;
-            y++;
-        }
-    }
-
-    for (int x = 0; x < width; x++)
-    {
-        int streak = 0;
-        int player = 0;
-        for (int y = 0; y < height; y++)
-        {
-            if (player == 0)
-            {
-                if ((player = board[x][y]) != 0)
-                {
-                    streak = 1;
-                }
-            }
-            else
-            {
-                if (player != board[x][y])
-                {
-                    if ((player = board[x][y]) == 0)
-                    {
-                        streak = 1;
-                    }
-                    else
-                    {
-                        streak = 0;
-                    }
-                }
-                else
-                {
-                    streak++;
-                    if (streak == 5)
-                    {
-                        return player;
-                    }
-                }
-            }
-        }
-    }
-
-    for (int y = 0; y < width; y++)
-    {
-        int streak = 0;
-        int player = 0;
-        for (int x = 0; x < height; x++)
-        {
-            if (player == 0)
-            {
-                if ((player = board[x][y]) != 0)
-                {
-                    streak = 1;
-                }
-            }
-            else
-            {
-                if (player != board[x][y])
-                {
-                    if ((player = board[x][y]) == 0)
-                    {
-                        streak = 1;
-                    }
-                    else
-                    {
-                        streak = 0;
-                    }
-                }
-                else
-                {
-                    streak++;
-                    if (streak == 5)
-                    {
-                        return player;
-                    }
-                }
-            }
-        }
-    }
-
-    return 0;
 }
 
 void do_move(const aiMove &aim)
