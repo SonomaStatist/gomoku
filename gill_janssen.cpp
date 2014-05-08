@@ -6,8 +6,6 @@ const char *infotext="name=\"AlphaBeta\", author=\"Amandeep Gill && Kyle Janssen
 #define MAX_BOARD 100
 int board[MAX_BOARD][MAX_BOARD];
 static unsigned seed;
-int move_num = 0;
-
 
 void brain_init()
 {
@@ -30,7 +28,6 @@ void brain_restart()
             board[x][y]=0;
         }
     }
-    move_num = 0;
     pipeOut("OK");
 }
 
@@ -115,7 +112,6 @@ void brain_turn()
     int y = aimoves[best].y;
     delete[] aimoves;
     do_mymove(x,y);
-    move_num++;
 }
 
 void brain_end() { }
@@ -237,39 +233,37 @@ aiMove* generate_moves(bool max_player, int &moves)
     aiMove* aimoves = new aiMove[moves];
     int used_moves = 0;
 
-    /* check if this is the first move */
+    int move_num = 0;
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (board[x][y] != 0)
+            {
+                move_num++;
+            }
+        }
+    }
+
     if (move_num == 0)
+    {
+        aiMove aim(p, width/2, height/2);
+        aimoves[0] = aim;
+        moves = 1;
+        return aimoves;
+    }
+
+
+    /* check if this is the second or third move */
+    if (move_num <= 2)
     {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (board[x][y] != 0)
-                {
-                    move_num++;
-                }
-            }
-        }
-
-        if (move_num == 0)
-        {
-            aiMove aim(p, width/2, height/2);
-            aimoves[0] = aim;
-            moves = 1;
-            return aimoves;
-        }
-    }
-
-    /* check if this is the second or third move */
-    if (move_num <= 2)
-    {
-        for (int x = 0; x <= width-4; x++)
-        {
-            for (int y = 0; y <= height-4; y++)
-            {
                 if (board[x][y] == o)
                 {
-                    if (x < width/2 && board[x+1][y] == 0)
+                    if (x < width/2 && isFree(x+1,y))
                     {
                         aiMove aim(p, x+1, y);
                         aimoves[0] = aim;
