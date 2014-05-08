@@ -97,7 +97,7 @@ void brain_turn()
 {
     int moves = 15;
     aiMove* aimoves = generate_moves(true, moves);
-    int best = 0;
+    int best = -1;
     int score = 0;
     for (int i = 0; i < moves; i++)
     {
@@ -108,8 +108,22 @@ void brain_turn()
             best = i;
         }
     }
-    int x = aimoves[best].x;
-    int y = aimoves[best].y;
+    int x, y;
+    if (best >= 0)
+    {
+        x = aimoves[best].x;
+        y = aimoves[best].y;
+    }
+    else
+    {
+        x = 0;
+        y = 0;
+        while (!isFree(x,y))
+        {
+            x = x + 2 % width;
+            y = y + 5 % height;
+        }
+    }
     delete[] aimoves;
     do_mymove(x,y);
 }
