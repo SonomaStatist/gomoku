@@ -116,6 +116,9 @@ void brain_turn()
     }
     else
     {
+        x = -1;
+        y = -1;
+        /*
         x = 0;
         y = 0;
         while (!isFree(x,y))
@@ -123,6 +126,7 @@ void brain_turn()
             x = x + 2 % width;
             y = y + 5 % height;
         }
+        */
     }
     delete[] aimoves;
     do_mymove(x,y);
