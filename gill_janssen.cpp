@@ -527,7 +527,8 @@ aiMove* generate_moves(bool max_player, int &moves)
     }
 
     /* find player stones to place the tile next to */
-    while (used_moves < moves)
+    int attempts = 0;
+    while (used_moves < moves && attempts < 200)
     {
         int x = rnd(width);
         int y = rnd(height);
@@ -540,8 +541,10 @@ aiMove* generate_moves(bool max_player, int &moves)
             aimoves[used_moves] = aim;
             used_moves++;
         }
+        attempts++;
     }
 
+    moves = used_moves;
     return aimoves;
 }
 
