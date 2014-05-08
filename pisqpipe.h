@@ -15,18 +15,15 @@ extern char dataFolder[256]; /* folder for persistent files */
 
 typedef struct
 {
-    int n; /* the number of neighboring player tiles */
     int p; /* the player whose tile to use */
     int x;
     int y;
-    bool dflag; /* a flag if the opponent has many tiles in a line here */
-    bool gflag; /* a flag if the player has many tiles in a line here */
-    inline aiMove(int p_=0, int x_=0, int y_=0, int n_=0) :
-        n(n_), p(p_), x(x_), y(y_)
-    {
-        dflag = false;
-        gflag = false;
-    }
+    int e; /* the evaluation of this move */
+    inline aiMove(int p_=0, int x_=0, int y_=0) :
+        p(p_), x(x_), y(y_)
+        {
+            e = 0;
+        }
 } aiMove;
 
 /* you have to implement these functions */
