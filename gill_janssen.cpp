@@ -196,7 +196,7 @@ aiMove* generate_moves(bool max_player, int &moves)
         }
     }
 
-    /* check for winning moves */
+    /* check for player winning moves */
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
@@ -223,14 +223,14 @@ aiMove* generate_moves(bool max_player, int &moves)
 
                 else if (hasTile(x,y+1,p) && hasTile(x,y+2,p) && hasTile(x,y+3,p))
                 {
-                    if (hasTile(x,y-1,p))
+                    if (isFree(x,y-1))
                     {
                         aiMove aim(p, x, y-1);
                         aimoves[0] = aim;
                         moves = 1;
                         return aimoves;
                     }
-                    else if (hasTile(x,y+4,p))
+                    else if (isFree(x,y+4))
                     {
                         aiMove aim(p, x, y+4);
                         aimoves[0] = aim;
@@ -256,6 +256,86 @@ aiMove* generate_moves(bool max_player, int &moves)
                     }
                 }
                 else if (hasTile(x+1,y-1,p) && hasTile(x+2,y-2,p) && hasTile(x+3,y-3,p))
+                {
+                    if (isFree(x-1,y+1))
+                    {
+                        aiMove aim(p, x-1, y-1);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                    else if (isFree(x+4,y-4))
+                    {
+                        aiMove aim(p, x+4, y-4);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                }
+            }
+        }
+    }
+
+    /* check for opponent's winning moves */
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (board[x][y] == o)
+            {
+                if (hasTile(x+1,y,o) && hasTile(x+2,y,o) && hasTile(x+3,y,o))
+                {
+                    if (isFree(x-1,y))
+                    {
+                        aiMove aim(p, x-1, y);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                    else if (isFree(x+4,y))
+                    {
+                        aiMove aim(p, x+4, y);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                }
+
+                else if (hasTile(x,y+1,o) && hasTile(x,y+2,o) && hasTile(x,y+3,o))
+                {
+                    if (isFree(x,y-1))
+                    {
+                        aiMove aim(p, x, y-1);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                    else if (isFree(x,y+4))
+                    {
+                        aiMove aim(p, x, y+4);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                }
+                else if (hasTile(x+1,y+1,o) && hasTile(x+2,y+2,o) && hasTile(x+3,y+3,o))
+                {
+                    if (isFree(x-1,y-1))
+                    {
+                        aiMove aim(p, x-1, y-1);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                    else if (isFree(x+4,y+4))
+                    {
+                        aiMove aim(p, x+4, y+4);
+                        aimoves[0] = aim;
+                        moves = 1;
+                        return aimoves;
+                    }
+                }
+                else if (hasTile(x+1,y-1,o) && hasTile(x+2,y-2,o) && hasTile(x+3,y-3,o))
                 {
                     if (isFree(x-1,y+1))
                     {
@@ -445,7 +525,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                     aiMove aim(p, x, y);
                     aimoves[used_moves] = aim;
                     used_moves++;
-                }
+                    }
             }
             if (used_moves == moves)
             {
