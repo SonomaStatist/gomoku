@@ -407,6 +407,7 @@ aiMove* generate_moves(bool max_player, int &moves)
             aiMove aim(p, x, y);
             do_move(aim);
             aim.e = eval_board(p);
+            undo_move(aim);
             if (aim.e > 0)
             {
                 if (used_moves == moves)
@@ -427,7 +428,6 @@ aiMove* generate_moves(bool max_player, int &moves)
                     }
                 }
             }
-            undo_move(aim);
         }
     }
 
@@ -581,7 +581,7 @@ void do_move(const aiMove &aim)
 {
     if (isFree(aim.x,aim.y))
     {
-        board[aim.x][aim.y];
+        board[aim.x][aim.y] = aim.p;
     }
 }
 
