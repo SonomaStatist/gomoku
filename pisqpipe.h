@@ -19,8 +19,14 @@ typedef struct
     int p; /* the player whose tile to use */
     int x;
     int y;
-    inline aiMove(int n_=0, int p_=0, int x_=0, int y_=0) :
-        n(n_), p(p_), x(x_), y(y_) {}
+    bool dflag; /* a flag if the opponent has many tiles in a line here */
+    bool gflag; /* a flag if the player has many tiles in a line here */
+    inline aiMove(int p_=0, int x_=0, int y_=0, int n_=0) :
+        n(n_), p(p_), x(x_), y(y_)
+    {
+        dflag = false;
+        gflag = false;
+    }
 } aiMove;
 
 /* you have to implement these functions */
@@ -37,13 +43,14 @@ void brain_end();  /* delete temporary files, free resources */
 /* AI's alphabeta pruning and helper functions */
 aiMove get_move(); /* sets up call to alphabeta() */
 int alphabeta(int d, int a, int b, bool max_player); /* depth, alpha, beta, eval for max/min player */
-int winner(); /* returns 0 for no winner, 1 or 2 if player 1 or 2 has won */
+int get_winner(); /* returns 0 for no winner, 1 or 2 if player 1 or 2 has won */
 void do_move(const aiMove &aim);
 void undo_move(const aiMove &aim);
 int eval_board(int player);
+int check_dir(int x, int y, int dir, int p); /* checks the given location and direction for player's tiles */
 aiMove[] generate_moves(bool max_player, int &moves);
-    /* generate moves for 1 (true) or 2 (false) generate up to &moves, and replace
-       moves with the number of moves generated */
+/* generate moves for 1 (true) or 2 (false) generate up to &moves, and replace
+   moves with the number of moves generated */
 
 #ifdef DEBUG_EVAL
 void brain_eval(int x,int y); /* display evaluation of square [x,y] */

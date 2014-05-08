@@ -11,7 +11,7 @@ aiMove get_move()
 {
     int a = -10000;
     int b = 10000;
-    int moves = 100;
+    int moves = 25;
 
     aiMove[] aimoves = generate_moves(true, moves);
 
@@ -29,28 +29,350 @@ aiMove get_move()
         }
     }
 
-    return aimoves[best_move];
+    aiMove aimove = aimoves[best_move];
+    delete[] aimoves;
+    return aimove;
 }
 
 int alphabeta(int d, int a, int b, bool max_player)
 {
-    // this is not correct, it needs to be fixed
+    int retval;
+    int moves = 25;
     aiMove[] aimoves = generate_moves(true, moves);
 
-    int best_move = 0;
-    int mval = -10000;
-    for (int i = 0; i < moves; i++)
+    int winner = get_winner();
+    if (winner != 0)
     {
-        do_move(aimoves[i]);
-        int tmp_mval = alphabeta(5, a, b, false);
-        undo_move(aimoves[i]);
-        if (tmp_mval > mvl)
+        retval = 10000;
+        if (winner == 1)
         {
-            mval = tmp_mval;
-            best_move = i;
+            retval = max_player ? retval : -retval;
+            goto cleanup_ab;
+        }
+        else
+        {
+            retval = max_player ? -retval : retval;
+            goto cleanup_ab;
+        }
+    }
+    else if (d <= 0)
+    {
+        retval = eval_board(1);
+        goto cleanup_ab;
+    }
+    else if (max_player)
+    {
+        for (int i = 0; i < moves; i++)
+        {
+            do_move(aimoves[i]);
+
+            int atmp = alphabeta(d-1, a, b, false);
+            a = atmp > a ? atmp : a;
+            undo_move(aimoves[i]);
+
+            if (b > a)
+            {
+                retval = a;
+                goto ceanup_ab;
+            }
+        }
+
+        retval = a;
+        goto cleanup_ab;
+    }
+    else
+    {
+        for (int i = 0; i < moves; i++)
+        {
+            do_move(aimoves[i]);
+
+            int btmp = alphabeta(d-1, a, b, false);
+            b = btmp > b ? btmp : b;
+            undo_move(aimoves[i]);
+
+            if (a > b)
+            {
+                retval = b;
+                goto cleanup_ab;
+            }
+        }
+
+        retval = b;
+        goto cleanup_ab;
+    }
+
+    cleanup_ab:
+    delete[] aimoves;
+    return retval;
+}
+
+aiMove[] generate_moves(bool max_player, int &moves)
+{
+    int p, o;
+    if (max_player)
+    {
+        p = 1;
+        o = 2;
+    }
+    else
+    {
+        p = 2;
+        o = 1;
+    }
+
+    aiMove[] aimoves = new aiMove[moves];
+    int used_moves = 0;
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (board[x][y] == 0)
+            {
+                aiMove aimove(p, x, y);
+                int otiles = 0;
+                int ptiles = 0;
+                for (int d = 0; d < 3; d++)
+                {
+                    int ot = check_dir(x, y, d, o);
+                    int pt = check_dir(x, y, d, p);
+                    aimove.dflag = aimove.dflag || ot >= 4;
+                    aimove.gflag = aimove.gflag || pt >= 4;
+                    otiles += ot;
+                    ptiles += pt;
+                }
+
+                if (used_moves < moves && (otiles > 0 || ptiles > 0))
+                {
+                    aimoves[used_moves] = aimove;
+                    used_moves++;
+                }
+            }
         }
     }
 
+    if (used_moves == 0)
+    {
+        int x = -1, y = -1;
+        while (x < 0 && y < 0 && x >= width && y >= height)
+        {
+            x = rnd(width);
+            y = rnd(height);
+        }
+        aimoves[0] = aiMove(p, x, y);
+        moves = 1;
+    }
+
+    return aimoves;
+}
+
+int check_dir(int x, int y, int dir, int p)
+{
+    int o = p == 1 ? 2 : 1;
+    int r = 0, l = 0;
+    bool rc = true, lc = true;
+    switch (d)
+    {
+    case 0:
+        for (int i = 1; i < 4; i++)
+        {
+            if (rc && x + i < width)
+            {
+                if (board[x+i][y] == p)
+                {
+                    r++;
+                }
+                else if (board[x+i][y] == o)
+                {
+                    rc = false;
+                }
+            }
+
+            if (lc && x - i >= 0)
+            {
+                if (board[x-i][y] == p)
+                {
+                    r++;
+                }
+                else if (board[x-i][y] == o)
+                {
+                    rc = false;
+                }
+            }
+        }
+        break;
+
+    case 1:
+        for (int i = 1; i < 4; i++)
+        {
+            if (rc && y + i < height)
+            {
+                if (board[x][y+i] == p)
+                {
+                    r++;
+                }
+                else if (board[x][y+i] == o)
+                {
+                    rc = false;
+                }
+            }
+
+            if (lc && y - i >= 0)
+            {
+                if (board[x][y-i] == p)
+                {
+                    r++;
+                }
+                else if (board[x][y-i] == o)
+                {
+                    rc = false;
+                }
+            }
+        }
+        break;
+
+    case 3:
+        for (int i = 1; i < 4; i++)
+        {
+            if (rc && x + i < width && y + i < height)
+            {
+                if (board[x+i][y+i] == p)
+                {
+                    r++;
+                }
+                else if (board[x+i][y+i] == o)
+                {
+                    rc = false;
+                }
+            }
+
+            if (lc && x - i >= 0 && y - i >= 0)
+            {
+                if (board[x-i][y-i] == p)
+                {
+                    r++;
+                }
+                else if (board[x-i][y-i] == o)
+                {
+                    rc = false;
+                }
+            }
+        }
+        break;
+    }
+
+    return r + l;
+}
+
+int eval_board(int p)
+{
+    int score = 0;
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (board[x][y] == p)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    int tmp = check_dir(x, y, i, p);
+                    score += tmp * tmp * tmp;
+                }
+            }
+        }
+    }
+    return score;
+}
+
+int get_winner()
+{
+    for (int i = 0; i < height; i)
+    {
+        int x = 0, y = i;
+        int streak = 0;
+        int player = 0;
+        while (x < width && y < height)
+        {
+            if (player == 0)
+            {
+                if ((player = board[x][y]) != 0)
+                {
+                    streak = 1;
+                }
+            }
+            else
+            {
+                if (player != board[x][y])
+                {
+                    if ((player = board[x][y]) == 0)
+                    {
+                        streak = 1;
+                    }
+                    else
+                    {
+                        streak = 0;
+                    }
+                }
+                else
+                {
+                    streak++;
+                    if (streak == 5)
+                    {
+                        return player;
+                    }
+                }
+            }
+            x++;
+            y++;
+        }
+    }
+
+    for (int i = 0; i < width; i++)
+    {
+        int x = i, y = 0;
+        int streak = 0;
+        int player = 0;
+        while (x < width && y < height)
+        {
+            if (player == 0)
+            {
+                if ((player = board[x][y]) != 0)
+                {
+                    streak = 1;
+                }
+            }
+            else
+            {
+                if (player != board[x][y])
+                {
+                    if ((player = board[x][y]) == 0)
+                    {
+                        streak = 1;
+                    }
+                    else
+                    {
+                        streak = 0;
+                    }
+                }
+                else
+                {
+                    streak++;
+                    if (streak == 5)
+                    {
+                        return player;
+                    }
+                }
+            }
+            x++;
+            y++;
+        }
+    }
+
+    for (int x = 0; x < width; x++)
+    {
+
+    }
+
+    return 0;
 }
 
 void brain_init()
