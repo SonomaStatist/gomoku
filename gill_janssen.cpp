@@ -30,6 +30,7 @@ void brain_restart()
             board[x][y]=0;
         }
     }
+    move_num = 0;
     pipeOut("OK");
 }
 
@@ -103,7 +104,7 @@ void brain_turn()
     int score = 0;
     for (int i = 0; i < moves; i++)
     {
-        int tmp = aimoves[i];
+        int tmp = aimoves[i].e;
         if (tmp >= score)
         {
             score = tmp;
@@ -287,22 +288,22 @@ aiMove* generate_moves(bool max_player, int &moves)
     }
 
     /* check for winning moves */
-    for (int x = 0; x <= width-4; x++)
+    for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y <= height-4; y++)
+        for (int y = 0; y < height; y++)
         {
             if (board[x][y] == p)
             {
-                if (board[x+1][y] == p && board[x+2][y] == p && board[x+3][y] == p)
+                if (hasTile(x+1,y,p) && hasTile(x+2,y,p) && hasTile(x+3,y,p))
                 {
-                    if (x > 0 && board[x-1][y] == 0)
+                    if (isFree(x-1,y))
                     {
                         aiMove aim(p, x-1, y);
                         aimoves[0] = aim;
                         moves = 1;
                         return aimoves;
                     }
-                    else if (x < width-4 && board[x+4][y] == p)
+                    else if (isFree(x+4,y,p))
                     {
                         aiMove aim(p, x+4, y);
                         aimoves[0] = aim;
@@ -311,16 +312,16 @@ aiMove* generate_moves(bool max_player, int &moves)
                     }
                 }
 
-                else if (board[x][y+1] == p && board[x][y+2] == p && board[x][y+3] == p)
+                else if (hasTile(x,y+1,p) && hasTile(x,y+2,p) && hasTile(x,y+3,p))
                 {
-                    if (y > 0 && board[x][y-1] == p)
+                    if (hasTile(x,y-1,p))
                     {
                         aiMove aim(p, x, y-1);
                         aimoves[0] = aim;
                         moves = 1;
                         return aimoves;
                     }
-                    else if (y < height-4 && board[x][y+4] == p)
+                    else if (hasTile(x,y+4,p))
                     {
                         aiMove aim(p, x, y+4);
                         aimoves[0] = aim;
@@ -328,16 +329,16 @@ aiMove* generate_moves(bool max_player, int &moves)
                         return aimoves;
                     }
                 }
-                else if (board[x+1][y+1] == p && board[x+2][y+2] == p && board[x+3][y+3] == p)
+                else if (hasTile(x+1,y+1,p) && hasTile(x+2,y+2,p) && hasTile(x+3,y+3,p))
                 {
-                    if (x > 0 && y > 0 && board[x-1][y-1] == p)
+                    if (isFree(x-1,y-1))
                     {
                         aiMove aim(p, x-1, y-1);
                         aimoves[0] = aim;
                         moves = 1;
                         return aimoves;
                     }
-                    else if (x < width-4 && y < height-4 && board[x+4][y+4] == p)
+                    else if (isFree(x+4,y+4,p))
                     {
                         aiMove aim(p, x+4, y+4);
                         aimoves[0] = aim;
@@ -345,16 +346,16 @@ aiMove* generate_moves(bool max_player, int &moves)
                         return aimoves;
                     }
                 }
-                else if (y >= 4 && board[x+1][y-1] == p && board[x+2][y-2] == p && board[x+3][y-3] == p)
+                else if (hasTile(x+1,y-1,p) && hasTile(x+2,y-2,p) && hasTile(x+3,y-3,p))
                 {
-                    if (x > 0 && board[x-1][y+1] == p)
+                    if (isFree(x-1,y+1))
                     {
                         aiMove aim(p, x-1, y-1);
                         aimoves[0] = aim;
                         moves = 1;
                         return aimoves;
                     }
-                    else if (x < width-4 && board[x+4][y-4] == p)
+                    else if (isFree(x+4,y-4))
                     {
                         aiMove aim(p, x+4, y-4);
                         aimoves[0] = aim;
@@ -367,13 +368,13 @@ aiMove* generate_moves(bool max_player, int &moves)
     }
 
     /* check for the opponent's straight fours */
-    for (int x = 0; x <= width-4; x++)
+    for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y <= height-4; y++)
+        for (int y = 0; y < height; y++)
         {
             if (board[x][y] == o)
             {
-                if (board[x+1][y] == o && board[x+2][y] == o && board[x+3][y] == o)
+                if (hasTile(x+1,y,o) && hasTile(x+2,y,o) && hasTile(x+3,y,o))
                 {
                     if (isFree(x-1, y))
                     {
@@ -390,7 +391,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                         return aimoves;
                     }
                 }
-                else if (board[x][y+1] == o && board[x][y+2] == o && board[x][y+3] == o)
+                else if (hasTile(x,y+1,o) && hasTile(x,y+2,o) && hasTile(x,y+2,o))
                 {
                     if (isFree(x, y-1))
                     {
@@ -407,7 +408,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                         return aimoves;
                     }
                 }
-                else if (board[x+1][y+1] == o && board[x+2][y+2] == o && board[x+3][y+3] == o)
+                else if (hasTile(x+1,y+1,o) && hasTile(x+2,y+2,o) && hasTile(x+3,y+3,o))
                 {
                     if (isFree(x-1, y-1))
                     {
@@ -424,7 +425,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                         return aimoves;
                     }
                 }
-                else if (y >= 4 && board[x+1][y-1] == o && board[x+2][y-2] == o && board[x+3][y-3] == o)
+                else if (hasTile(x+1,y-1,o) && hasTile(x+2,y-2,o) && hasTile(x+3,y-3,o))
                 {
                     if (isFree(x-1, y+1))
                     {
@@ -446,34 +447,34 @@ aiMove* generate_moves(bool max_player, int &moves)
     }
 
     /* check for opponent's open three */
-    for (int x = 1; x <= width-4; x++)
+    for (int x = 1; x < width; x++)
     {
-        for (int y = 1; y <= height-4; y++)
+        for (int y = 1; y < height; y++)
         {
             if (board[x][y] == o)
             {
-                if (board[x-1][y] == 0 && board[x+1][y] == o && board[x+2][y] == o && board[x+3][y] == 0)
+                if (isFree(x-1,y) && hasTile(x+1,y,o) && hasTile(x+2,y,o) && isFree(x+3,y))
                 {
                     aiMove aim(p, x-1, y);
                     aimoves[0] = aim;
                     moves = 1;
                     return aimoves;
                 }
-                else if (board[x][y-1] == 0 && board[x][y+1] == o && board[x][y+2] == o && board[x][y+3] == 0)
+                else if (isFree(x,y-1) && hasTile(x,y+1,o) && hasTile(x,y+2,o) && isFree(x,y+3))
                 {
                     aiMove aim(p, x, y-1);
                     aimoves[0] = aim;
                     moves = 1;
                     return aimoves;
                 }
-                else if (board[x-1][y-1] == 0 && board[x+1][y+1] == o && board[x+2][y+2] == o && board[x+3][y+3] == 0)
+                else if (isFree(x-1,y-1) && hasTile(x+1,y+1,o) && hasTile(x+2,y+1,o) && isFree(x+3,y+3))
                 {
                     aiMove aim(p, x-1, y-1);
                     aimoves[0] = aim;
                     moves = 1;
                     return aimoves;
                 }
-                if (y >= 3 && board[x-1][y+1] == 0 && board[x+1][y-1] == o && board[x+2][y-2] == o && board[x+3][y-3] == 0)
+                else if (isFree(x-1,y+1) && hasTile(x+1,y-1,o) && hasTile(x+2,y-2,o) && isFree(x+3,y-3))
                 {
                     aiMove aim(p, x-1, y+1);
                     aimoves[0] = aim;
@@ -518,12 +519,6 @@ aiMove* generate_moves(bool max_player, int &moves)
             }
             undo_move(aim);
         }
-    }
-
-    if (used_moves > 0)
-    {
-        moves = used_moves;
-        return aimoves;
     }
 
     /* find player stones to place the tile next to */
