@@ -517,22 +517,25 @@ aiMove* generate_moves(bool max_player, int &moves)
     }
 
     /* find player stones to place the tile next to */
-    int attempts = 0;
-    while (used_moves < moves && attempts < 20)
+    for (int x = 0; x < width; x++)
     {
-        int x = rnd(width);
-        int y = rnd(height);
-
-        if (isFree(x,y) && hasTile(x-1,y,p) || hasTile(x-1,y-1,p) ||
-            hasTile(x-1,y+1,p) || hasTile(x+1,y,p) || hasTile(x+1,y-1,p) ||
-            hasTile(x+1,y+1,p) || hasTile(x,y-1,p) || hasTile(x,y+1,p))
+        for (int y = 0; y < height; y++)
         {
-            aiMove aim(p, x, y);
-            aimoves[used_moves] = aim;
-            used_moves++;
+            if (isFree(x,y) && hasTile(x-1,y,p) || hasTile(x-1,y-1,p) ||
+                hasTile(x-1,y+1,p) || hasTile(x+1,y,p) || hasTile(x+1,y-1,p) ||
+                hasTile(x+1,y+1,p) || hasTile(x,y-1,p) || hasTile(x,y+1,p))
+            {
+                aiMove aim(p, x, y);
+                aimoves[used_moves] = aim;
+                used_moves++;
+            }
+            if (used_moves == moves)
+            {
+                return aimoves;
+            }
         }
-        attempts++;
     }
+
 
     moves = used_moves;
     return aimoves;
