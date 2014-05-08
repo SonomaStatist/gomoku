@@ -304,7 +304,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                         moves = 1;
                         return aimoves;
                     }
-                    else if (isFree(x+4,y,p))
+                    else if (isFree(x+4,y))
                     {
                         aiMove aim(p, x+4, y);
                         aimoves[0] = aim;
@@ -339,7 +339,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                         moves = 1;
                         return aimoves;
                     }
-                    else if (isFree(x+4,y+4,p))
+                    else if (isFree(x+4,y+4))
                     {
                         aiMove aim(p, x+4, y+4);
                         aimoves[0] = aim;
@@ -529,9 +529,9 @@ aiMove* generate_moves(bool max_player, int &moves)
         int x = rnd(width);
         int y = rnd(height);
 
-        if (hasTile(x-1,y,p) || hasTile(x-1,y-1,p) || hasTile(x-1,y+1,p) ||
-            hasTile(x+1,y,p) || hasTile(x+1,y-1,p) || hasTile(x+1,y+1,p) ||
-            hasTile(x,y-1,p) || hasTile(x,y+1,p))
+        if (isFree(x,y) && hasTile(x-1,y,p) || hasTile(x-1,y-1,p) ||
+            hasTile(x-1,y+1,p) || hasTile(x+1,y,p) || hasTile(x+1,y-1,p) ||
+            hasTile(x+1,y+1,p) || hasTile(x,y-1,p) || hasTile(x,y+1,p))
         {
             aiMove aim(p, x, y);
             aimoves[used_moves] = aim;
