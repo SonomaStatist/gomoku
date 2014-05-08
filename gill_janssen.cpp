@@ -509,6 +509,7 @@ aiMove* generate_moves(bool max_player, int &moves)
                     if (least >= 0)
                     {
                         aimoves[least] = aim;
+                        used_moves++;
                     }
                 }
             }
