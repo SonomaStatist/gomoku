@@ -128,7 +128,7 @@ aiMove get_move()
     int b = 10000;
     int moves = 25;
 
-    aiMove[] aimoves = generate_moves(true, moves);
+    aiMove* aimoves = generate_moves(true, moves);
 
     int best_move = 0;
     int mval = -10000;
@@ -137,7 +137,7 @@ aiMove get_move()
         do_move(aimoves[i]);
         int tmp_mval = alphabeta(5, a, b, false);
         undo_move(aimoves[i]);
-        if (tmp_mval > mvl)
+        if (tmp_mval > mval)
         {
             mval = tmp_mval;
             best_move = i;
@@ -153,7 +153,7 @@ int alphabeta(int d, int a, int b, bool max_player)
 {
     int retval;
     int moves = 10;
-    aiMove[] aimoves = generate_moves(true, moves);
+    aiMove* aimoves = generate_moves(true, moves);
 
     int winner = get_winner();
     if (winner != 0)
@@ -188,7 +188,7 @@ int alphabeta(int d, int a, int b, bool max_player)
             if (b > a)
             {
                 retval = a;
-                goto ceanup_ab;
+                goto cleanup_ab;
             }
         }
 
@@ -221,7 +221,7 @@ cleanup_ab:
     return retval;
 }
 
-aiMove[] generate_moves(bool max_player, int &moves)
+aiMove* generate_moves(bool max_player, int &moves)
 {
     int p, o;
     if (max_player)
@@ -235,7 +235,7 @@ aiMove[] generate_moves(bool max_player, int &moves)
         o = 1;
     }
 
-    aiMove[] aimoves = new aiMove[moves];
+    aiMove* aimoves = new aiMove[moves];
     int used_moves = 0;
 
     /* check if this is the first move */
@@ -305,7 +305,7 @@ aiMove[] generate_moves(bool max_player, int &moves)
                         moves = 1;
                         return aimoves;
                     }
-                    else if (x < width-4 && board[x+4] == p)
+                    else if (x < width-4 && board[x+4][y] == p)
                     {
                         aiMove aim(p, x+4, y);
                         aimoves[0] = aim;
@@ -451,7 +451,7 @@ aiMove[] generate_moves(bool max_player, int &moves)
     /* check for opponent's open three */
     for (int x = 1; x <= width-4; x++)
     {
-        for (y = 1; y <= height-4; y++)
+        for (int y = 1; y <= height-4; y++)
         {
             if (board[x][y] == o)
             {
@@ -504,7 +504,7 @@ aiMove[] generate_moves(bool max_player, int &moves)
             {
                 if (used_moves == moves)
                 {
-                    int e == aim.e;
+                    int e = aim.e;
                     int least = -1;
                     for (int i = 0; i < moves; i++)
                     {
@@ -582,7 +582,7 @@ bool is_cfour(int x, int y, int p, int o)
     {
         found = found || isFree(x+5,y) && hasTile(x+4,y,p) && hasTile(x+3,y,p) &&
                 hasTile(x+2,y,p) && hasTile(x+1,y,p);
-        fount = found || ifFree(x,y+5) && hasTile(x,y+4,p) && hasTile(x,y+3,p) &&
+        found = found || isFree(x,y+5) && hasTile(x,y+4,p) && hasTile(x,y+3,p) &&
                 hasTile(x,y+2,p) && hasTile(x+4,y,p);
     }
     if (hasTile(x+5,y,o) && hasTile(x,y,p))

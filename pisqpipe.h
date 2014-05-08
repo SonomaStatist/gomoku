@@ -13,8 +13,9 @@ extern int terminate; /* return from brain_turn when terminate>0 */
 extern unsigned start_time; /* tick count at the beginning of turn */
 extern char dataFolder[256]; /* folder for persistent files */
 
-typedef struct
+class aiMove
 {
+      public:
     int p; /* the player whose tile to use */
     int x;
     int y;
@@ -24,7 +25,7 @@ typedef struct
         {
             e = 0;
         }
-} aiMove;
+};
 
 /* you have to implement these functions */
 void brain_init(); /* create the board and call pipeOut("OK"); */
@@ -45,7 +46,7 @@ void do_move(const aiMove &aim);
 void undo_move(const aiMove &aim);
 int eval_board(int player);
 int check_dir(int x, int y, int dir, int p); /* checks the given location and direction for player's tiles */
-aiMove[] generate_moves(bool max_player, int &moves);
+aiMove* generate_moves(bool max_player, int &moves);
 /* generate moves for 1 (true) or 2 (false) generate up to &moves, and replace
    moves with the number of moves generated */
 
