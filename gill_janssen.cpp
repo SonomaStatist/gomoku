@@ -540,9 +540,10 @@ aiMove* generate_moves(bool max_player, int &moves)
     {
         for (int y = 0; y < height; y++)
         {
-            if (isFree(x,y) && hasTile(x-1,y,p) || hasTile(x-1,y-1,p) ||
-                hasTile(x-1,y+1,p) || hasTile(x+1,y,p) || hasTile(x+1,y-1,p) ||
-                hasTile(x+1,y+1,p) || hasTile(x,y-1,p) || hasTile(x,y+1,p))
+            if (isFree(x,y) && (
+                hasTile(x-1,y,p) || hasTile(x-1,y-1,p) || hasTile(x-1,y+1,p) ||
+                hasTile(x+1,y,p) || hasTile(x+1,y-1,p) || hasTile(x+1,y+1,p) ||
+                hasTile(x,y-1,p) || hasTile(x,y+1,p)))
             {
                 aiMove aim(p, x, y);
                 aimoves[used_moves] = aim;
