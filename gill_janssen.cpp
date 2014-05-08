@@ -97,7 +97,7 @@ void brain_turn()
 {
     int moves = 40;
     aiMove* aimoves = generate_moves(true, moves);
-    int best = -1;
+    int best = 0;
     int score = 0;
     for (int i = 0; i < moves; i++)
     {
@@ -523,9 +523,10 @@ aiMove* generate_moves(bool max_player, int &moves)
                     hasTile(x,y-1,p) || hasTile(x,y+1,p))
                 {
                     aiMove aim(p, x, y);
+                    aim.e = -1;
                     aimoves[used_moves] = aim;
                     used_moves++;
-                    }
+                }
             }
             if (used_moves == moves)
             {
