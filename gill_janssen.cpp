@@ -152,7 +152,7 @@ aiMove get_move()
 int alphabeta(int d, int a, int b, bool max_player)
 {
     int retval;
-    int moves = 25;
+    int moves = 10;
     aiMove[] aimoves = generate_moves(true, moves);
 
     int winner = get_winner();
