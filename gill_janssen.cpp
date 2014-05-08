@@ -38,7 +38,7 @@ bool isFree(int x, int y)
 
 bool hasTile(int x, int y, int p)
 {
-    return x>=0 && y>=0 && x<width && y<height && board[x][y] == p;
+    return x>=0 && y>=0 && x<width && y<height && board[x][y]==p;
 }
 
 void brain_my(int x,int y)
@@ -95,7 +95,7 @@ unsigned rnd(unsigned n)
 
 void brain_turn()
 {
-    int moves = 15;
+    int moves = 40;
     aiMove* aimoves = generate_moves(true, moves);
     int best = -1;
     int score = 0;
@@ -109,16 +109,13 @@ void brain_turn()
         }
     }
     int x, y;
-    if (best >= 0)
+    if (best >= 0 && isFree(aimoves[best].x,aimoves[best].y))
     {
         x = aimoves[best].x;
         y = aimoves[best].y;
     }
     else
     {
-        x = -1;
-        y = -1;
-        /*
         x = 0;
         y = 0;
         while (!isFree(x,y))
@@ -126,7 +123,6 @@ void brain_turn()
             x = x + 2 % width;
             y = y + 5 % height;
         }
-        */
     }
     delete[] aimoves;
     do_mymove(x,y);
