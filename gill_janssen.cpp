@@ -399,7 +399,7 @@ aiMove* generate_moves(bool max_player, int &moves)
     {
         for (int y = 0; y < height; y++)
         {
-            if (board[x][y] == 0)
+            if (board[x][y] != 0)
             {
                 continue;
             }
