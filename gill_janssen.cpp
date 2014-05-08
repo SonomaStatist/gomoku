@@ -115,6 +115,7 @@ void brain_turn()
     int y = aimoves[best].y;
     delete[] aimoves;
     do_mymove(x,y);
+    move_num++;
 }
 
 void brain_end() { }
@@ -523,7 +524,7 @@ aiMove* generate_moves(bool max_player, int &moves)
 
     /* find player stones to place the tile next to */
     int attempts = 0;
-    while (used_moves < moves && attempts < 200)
+    while (used_moves < moves && attempts < 20)
     {
         int x = rnd(width);
         int y = rnd(height);
