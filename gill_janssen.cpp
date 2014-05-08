@@ -829,6 +829,22 @@ int get_winner()
     return 0;
 }
 
+void do_move(const aiMove &aim)
+{
+    if (isFree(aim.x,aim.y))
+    {
+        board[aim.x][aim.y];
+    }
+}
+
+void undo_move(const aiMove &aim)
+{
+    if (hasTile(aim.x,aim.y,aim.p))
+    {
+        board[aim.x][aim.y] = 0;
+    }
+}
+
 #ifdef DEBUG_EVAL
 #include <windows.h>
 
