@@ -97,25 +97,22 @@ unsigned rnd(unsigned n)
 
 void brain_turn()
 {
-    int x,y,i;
-
-    i=-1;
-    do
+    int moves = 15;
+    aiMove* aimoves = generate_moves(true, moves);
+    int best = 0;
+    int score = 0;
+    for (int i = 0; i < moves; i++)
     {
-        x=rnd(width);
-        y=rnd(height);
-        i++;
-        if(terminate)
+        int tmp = aimoves[i];
+        if (tmp >= score)
         {
-            return;
+            score = tmp;
+            best = i;
         }
     }
-    while(!isFree(x,y));
-
-    if(i>1)
-    {
-        pipeOut("DEBUG %d coordinates didn't hit an empty field",i);
-    }
+    int x = aimoves[best].x;
+    int y = aimoves[best].y;
+    delete[] aimoves;
     do_mymove(x,y);
 }
 
